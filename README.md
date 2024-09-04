@@ -34,4 +34,6 @@ Executa certas funções de dev baseado em alguns parâmetros.
 2 - Solicitar novas features
 3 - Solicitar correções
 
-## Faze auto checagem po conta propria
+# Testes
+
+- Testar com o projeto de pesquisa de passagens aereas.
