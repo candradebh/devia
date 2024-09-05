@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatGPT Simples</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <h1>Chat Simples</h1>
+
+    <div id="chat-box">
+        {{range .messages}}
+        <div class="message">
+            <strong>Você:</strong> {{.user_message}} <br>
+            <strong>Bot:</strong> {{.bot_response}} <br>
+            <small>{{.timestamp}}</small>
+        </div>
+        {{end}}
+    </div>
+
+    <form action="/send" method="POST">
+        <textarea name="message" placeholder="Digite sua mensagem..."></textarea>
+        <br>
+        <button type="submit">Enviar</button>
+    </form>
+</body>
+</html>
