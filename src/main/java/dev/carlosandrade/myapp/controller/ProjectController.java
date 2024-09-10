@@ -48,7 +48,7 @@ public class ProjectController
     @PostMapping
     public ProjectEntity createProject(@RequestBody ProjectEntity project)
     {
-        String repoUrl = "";
+        String repoUrl = "https://github.com/candradebh/" + project.getName();
 
         // CreateRepoResponse response = projectService.createRepository(request);
         // GitUtils.createDirectory(project.getWorkspacePath() + project.getName()); //cria apenas uma pasta
@@ -60,28 +60,29 @@ public class ProjectController
         }
         catch (IOException e)
         {
-            // TODO Auto-generated catch block
+
+            System.out.println("Erro ao criar o repositorio noi git:\n" + e.getMessage());
             e.printStackTrace();
         }
 
-        File localRepoDirectory = new File(project.getWorkspacePath());
+        File localRepoDirectory = new File(project.getWorkspacePath() + "/" + project.getName());
         try
         {
             Git.cloneRepository().setURI(repoUrl).setDirectory(localRepoDirectory).call();
         }
         catch (InvalidRemoteException e)
         {
-            // TODO Auto-generated catch block
+            System.out.println(e.getMessage());
             e.printStackTrace();
         }
         catch (TransportException e)
         {
-            // TODO Auto-generated catch block
+            System.out.println(e.getMessage());
             e.printStackTrace();
         }
         catch (GitAPIException e)
         {
-            // TODO Auto-generated catch block
+            System.out.println(e.getMessage());
             e.printStackTrace();
         }
 
