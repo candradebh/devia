@@ -8,10 +8,14 @@
           <v-btn color="primary" @click="openForm(null)">Criar</v-btn>
         </v-toolbar>
       </template>
+      <template v-slot:[`item.date`]="{ item }">
+        {{ item.date | formatDate }}
+      </template>
 
       <template v-slot:[`item.actions`]="{ item }">
         <v-icon small @click="openForm(item)">mdi-pencil</v-icon>
         <v-icon small @click="confirmDelete(item)">mdi-delete</v-icon>
+        <v-icon small @click="goToFeatures(item)">mdi-tag</v-icon> <!-- Botão para Features -->
       </template>
     </v-data-table>
 
@@ -37,7 +41,6 @@
 
 <script>
 import ProjectsForm from './ProjectsForm.vue';
-
 
 export default {
   name: 'ProjectList',
@@ -78,12 +81,14 @@ export default {
         this.fetchModels();
         this.dialogDelete = false;
       });
+    },
+    // Método para navegar para a página de features
+    goToFeatures(project) {
+      this.$router.push(`/projects/${project.id}/details`);
     }
   },
   created() {
     this.fetchModels();
   }
-
-
 };
 </script>

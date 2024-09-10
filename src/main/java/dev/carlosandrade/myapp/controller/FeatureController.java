@@ -1,6 +1,7 @@
 package dev.carlosandrade.myapp.controller;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -64,7 +65,8 @@ public class FeatureController
             @Override
             public ResponseEntity<FeatureEntity> apply(FeatureEntity feature)
             {
-                feature.setValue(featureDetails.getValue());
+                feature.setFeatureValue(featureDetails.getFeatureValue());
+                feature.setTag(featureDetails.getTag());
                 FeatureEntity updatedFeature = featureRepository.save(feature);
                 return ResponseEntity.ok(updatedFeature);
             }
@@ -74,7 +76,16 @@ public class FeatureController
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteFeature(@PathVariable Long id)
     {
-        return null;
+        Optional<FeatureEntity> featureOpt = featureRepository.findById(id);
+        if (featureOpt.isPresent())
+        {
+            featureRepository.delete(featureOpt.get());
+            return ResponseEntity.ok().build();
+        }
+        else
+        {
+            return ResponseEntity.notFound().build();
+        }
 
     }
 }

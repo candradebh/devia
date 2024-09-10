@@ -1,14 +1,22 @@
 package dev.carlosandrade.myapp.services;
 
 import java.io.IOException;
+import java.util.Date;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.logging.Logger;
 import org.kohsuke.github.GHCreateRepositoryBuilder;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.GitHubBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import dev.carlosandrade.myapp.controller.ProjectController;
+import dev.carlosandrade.myapp.entity.FeatureEntity;
 import dev.carlosandrade.myapp.entity.ProjectEntity;
+import dev.carlosandrade.myapp.repository.FeatureRepository;
+import dev.carlosandrade.myapp.repository.ProjectRepository;
 
 @Service
 public class ProjectService
@@ -21,6 +29,15 @@ public class ProjectService
     @Value("${github.token}")
     private String githubToken;
 
+    @Autowired
+    private GitHubService gitHubService;
+
+    @Autowired
+    private ProjectRepository projectRepository;
+
+    @Autowired
+    private FeatureRepository featureRepository;
+
     public String createRepository(String name, String description, boolean isPrivate) throws IOException
     {
         GitHub github = new GitHubBuilder().withOAuthToken(githubToken).build();
@@ -31,20 +48,67 @@ public class ProjectService
         return builder.create().getHtmlUrl().toString();
     }
 
-    private String createRepositoryInGit(ProjectEntity project, String repoUrl)
+    public ProjectEntity createRepositoryInGitAndClone(ProjectEntity project)
     {
+        project.setDate(new Date());
+
         try
         {
-            repoUrl = this.createRepository(project.getName(), project.getDescription(), false);
-            project.setGitPath(repoUrl);
+            String repoUrl = gitHubService.createRepository(project, false);
 
+            gitHubService.createDirAndCloneRepository(project, repoUrl);
+
+            gitHubService.updateReadmeAndPush(project);
         }
-        catch (IOException e)
+        catch (Exception e)
         {
-
-            logger.info("Erro ao criar o repositorio no git:\n" + e.getMessage());
-            e.printStackTrace();
+            logger.info("Falha ao tenta criar e/ou clonar o repositório");
         }
-        return repoUrl;
+
+        return projectRepository.save(project);
     }
+
+    public ProjectEntity addFeatureToProject(Long projectId, FeatureEntity feature)
+    {
+        ProjectEntity project = projectRepository.findById(projectId).orElseThrow(new Supplier<RuntimeException>()
+        {
+            @Override
+            public RuntimeException get()
+            {
+                return new RuntimeException("Projeto não encontrado");
+            }
+        });
+        // project.getFeatures().clear();
+        // project = projectRepository.save(project);
+
+        FeatureEntity v_feature = project.getFeatures().stream().filter(new Predicate<FeatureEntity>()
+        {
+            @Override
+            public boolean test(FeatureEntity f)
+            {
+                return feature.getId() != null && f.getId() == feature.getId();
+            }
+        }).findFirst().orElse(null);
+
+        if (v_feature == null)
+        {
+            feature.setProject(project);
+            project.getFeatures().add(feature);
+            featureRepository.save(feature);
+        }
+        else
+        {
+            v_feature.setTag(feature.getTag());
+            v_feature.setFeatureValue(feature.getFeatureValue());
+            featureRepository.save(v_feature);
+        }
+
+        return projectRepository.save(project);
+    }
+
+    public List<FeatureEntity> getFeaturesByProjectId(Long projectId)
+    {
+        return featureRepository.findByProjectId(projectId);
+    }
+
 }

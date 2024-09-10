@@ -1,6 +1,5 @@
 package dev.carlosandrade.myapp.controller;
 
-import java.util.Date;
 import java.util.List;
 import java.util.function.Function;
 import java.util.logging.Logger;
@@ -15,9 +14,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import dev.carlosandrade.myapp.entity.FeatureEntity;
 import dev.carlosandrade.myapp.entity.ProjectEntity;
 import dev.carlosandrade.myapp.repository.ProjectRepository;
 import dev.carlosandrade.myapp.services.GitHubService;
+import dev.carlosandrade.myapp.services.ProjectService;
 
 @RestController
 @RequestMapping("/projects")
@@ -33,6 +34,9 @@ public class ProjectController
 
     @Autowired
     private GitHubService gitHubService;
+
+    @Autowired
+    private ProjectService projectService;
 
     @GetMapping
     public List<ProjectEntity> getAllProjects()
@@ -55,22 +59,7 @@ public class ProjectController
     @PostMapping
     public ProjectEntity createProject(@RequestBody ProjectEntity project)
     {
-        project.setDate(new Date());
-
-        try
-        {
-            String repoUrl = gitHubService.createRepository(project, false);
-
-            gitHubService.createDirAndCloneRepository(project, repoUrl);
-
-            gitHubService.updateReadmeAndPush(project);
-        }
-        catch (Exception e)
-        {
-            logger.info("Falha ao tenta criar e/ou clonar o repositório");
-        }
-
-        return projectRepository.save(project);
+        return projectService.createRepositoryInGitAndClone(project);
     }
 
     @PutMapping("/{id}")
@@ -110,6 +99,21 @@ public class ProjectController
     {
         return null;
 
+    }
+
+    @PostMapping("/{projectId}/features")
+    public ResponseEntity<ProjectEntity> addFeatureToProject(@PathVariable Long projectId, @RequestBody FeatureEntity feature)
+    {
+
+        ProjectEntity project = projectService.addFeatureToProject(projectId, feature);
+        return ResponseEntity.ok(project);
+    }
+
+    @GetMapping("/{projectId}/features")
+    public ResponseEntity<List<FeatureEntity>> getFeaturesByProjectId(@PathVariable Long projectId)
+    {
+        List<FeatureEntity> features = projectService.getFeaturesByProjectId(projectId);
+        return ResponseEntity.ok(features);
     }
 
 }

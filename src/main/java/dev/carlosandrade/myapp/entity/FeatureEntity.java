@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,10 +31,11 @@ public class FeatureEntity
     private String tag;
 
     @Column(nullable = false)
-    private String value;
+    private String featureValue;
 
     @ManyToOne
     @JoinColumn(name = "project_id", nullable = false)
+    @JsonBackReference
     private ProjectEntity project;
 
 }

@@ -1,180 +1,174 @@
 <template>
-<div v-if="connector.connectorConfig">
-  <h1>Detalhes do Conector: {{ connector.connectorConfig.name }}</h1>
-  <table>
-    <thead>
-      <tr>
-        <th>Parâmetro</th>
-        <th>Nome da Propriedade</th>
-        <th>Valor Padrão</th>
-        <th>Valor</th>
-        <th>Tipo</th>
-        <th>Descrição</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>ID</td>
-        <td>connector.connectorConfig.id</td>
-        <td></td>
-        <td>{{ connector.connectorConfig.id }}</td>
-        <td></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td>{{ getParameter("name").title }}</td>
-        <td>{{ getParameter("name").name }}</td>
-        <td>{{ getParameter("name").defaultValue }}</td>
-        <td>{{ connector.connectorConfig.name }}</td>
-        <td>{{ getParameter('name').type }}</td>
-        <td>{{ getParameter("name").description }}</td>
-      </tr>
-      <tr>
-        <td>Nome do cliente</td>
-        <td>nome.cliente</td>
-        <td></td>
-        <td>{{ connector.connectorConfig.nomeCliente }}</td>
-        <td>all</td>
-        <td>Parâmetro personalizado</td>
-      </tr>
-      <tr>
-        <td>{{ getParameter("connector.class").title }}</td>
-        <td>{{ getParameter("connector.class").name }}</td>
-        <td>{{ getParameter("connector.class").defaultValue }}</td>
-        <td>{{ connector.connectorConfig.classname }}</td>
-        <td>{{ getParameter('connector.class').type }}</td>
-        <td>{{ getParameter("connector.class").description }}</td>
-      </tr>
-      <tr>
-        <td>Tipo do Conector</td>
-        <td>type</td>
-        <td></td>
-        <td>{{ connector.connectorConfig.type }}</td>
-        <td>all</td>
-        <td>Parâmetro personalizado</td>
-      </tr>
-      <tr v-if="getParameter('database.user').type == 'all' || getParameter('database.user').type == connector.connectorConfig.type">
-        <td>{{ getParameter("database.user").title }}</td>
-        <td>{{ getParameter("database.user").name }}</td>
-        <td>{{ getParameter("database.user").defaultValue }}</td>
-        <td>{{ connector.connectorConfig.usuario }}</td>
-        <td>{{ getParameter('database.user').type }}</td>
-        <td>{{ getParameter("database.user").description }}</td>
-      </tr>
-      <tr v-if="getParameter('database.password').type == connector.connectorConfig.type">
-        <td>{{ getParameter("database.password").title }}</td>
-        <td>{{ getParameter("database.password").name }}</td>
-        <td>{{ getParameter("database.password").defaultValue }}</td>
-        <td>{{ connector.connectorConfig.senha }}</td>
-        <td>{{ getParameter('database.password').type }}</td>
-        <td>{{ getParameter("database.password").description }}</td>
-      </tr>
-      <tr v-if="getParameter('database.hostname').type == connector.connectorConfig.type">
-        <td>{{ getParameter("database.hostname").title }}</td>
-        <td>{{ getParameter("database.hostname").name }}</td>
-        <td>{{ getParameter("database.hostname").defaultValue }}</td>
-        <td>{{ connector.connectorConfig.host }}</td>
-        <td>{{ getParameter('database.hostname').type }}</td>
-        <td>{{ getParameter("database.hostname").description }}</td>
-      </tr>
-      <tr v-if="getParameter('database.port').type == connector.connectorConfig.type">
-        <td>{{ getParameter("database.port").title }}</td>
-        <td>{{ getParameter("database.port").name }}</td>
-        <td>{{ getParameter("database.port").defaultValue }}</td>
-        <td>{{ connector.connectorConfig.port }}</td>
-        <td>{{ getParameter('database.port').type }}</td>
-        <td>{{ getParameter("database.port").description }}</td>
-      </tr>
-      <tr v-if="getParameter('database.dbname').type == connector.connectorConfig.type">
-        <td>{{ getParameter("database.dbname").title }}</td>
-        <td>{{ getParameter("database.dbname").name }}</td>
-        <td>{{ getParameter("database.dbname").defaultValue }}</td>
-        <td>{{ connector.connectorConfig.database }}</td>
-        <td>{{ getParameter('database.dbname').type }}</td>
-        <td>{{ getParameter("database.dbname").description }}</td>
-      </tr>
-      <tr v-if="getParameter('defaultDataset').type == connector.connectorConfig.type">
-        <td>{{ getParameter("defaultDataset").title }}</td>
-        <td>{{ getParameter("defaultDataset").name }}</td>
-        <td>{{ getParameter("defaultDataset").defaultValue }}</td>
-        <td>{{ connector.connectorConfig.defaultDataset }}</td>
-        <td>{{ getParameter('defaultDataset').type }}</td>
-        <td>{{ getParameter("defaultDataset").description }}</td>
-      </tr>
-      <tr v-if="getParameter('projectBigquery').type == connector.connectorConfig.type">
-        <td>{{ getParameter("projectBigquery").title }}</td>
-        <td>{{ getParameter("projectBigquery").name }}</td>
-        <td>{{ getParameter("projectBigquery").defaultValue }}</td>
-        <td>{{ connector.connectorConfig.projectBigquery }}</td>
-        <td>{{ getParameter('projectBigquery').type }}</td>
-        <td>{{ getParameter("projectBigquery").description }}</td>
-      </tr>
-      <tr v-if="getParameter('mergeIntervalMs').type == connector.connectorConfig.type">
-        <td>{{ getParameter("mergeIntervalMs").title }}</td>
-        <td>{{ getParameter("mergeIntervalMs").name }}</td>
-        <td>{{ getParameter("mergeIntervalMs").defaultValue }}</td>
-        <td>{{ connector.connectorConfig.mergeIntervalMs }}</td>
-        <td>{{ getParameter('mergeIntervalMs').type }}</td>
-        <td>{{ getParameter("mergeIntervalMs").description }}</td>
-      </tr>
-      <tr v-if="getParameter('table.include.list').type == connector.connectorConfig.type">
-        <td>{{ getParameter("table.include.list").title }}</td>
-        <td>{{ getParameter("table.include.list").name }}</td>
-        <td>{{ getParameter("table.include.list").defaultValue }}</td>
-        <td>{{ connector.connectorConfig.tableIncludeList }}</td>
-        <td>{{ getParameter('table.include.list').type }}</td>
-        <td>{{ getParameter("table.include.list").description }}</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+  <v-container>
+    <v-row>
+      <v-col cols="12">
+        <h2>{{ project.name }}</h2>
 
+        <!-- Botão para abrir o modal de adição de tag -->
+        <v-btn color="primary" @click="openModal">Adicionar Tag</v-btn>
+
+        <!-- Data Table para Exibir Features -->
+        <v-data-table :headers="headers" :items="features" class="mt-5">
+          <!-- eslint-disable-next-line -->
+          <template v-slot:item.tag="{ item }">
+            {{ item.tag }}
+          </template>
+          <!-- eslint-disable-next-line -->
+          <template v-slot:item.featureValue="{ item }">
+            {{ item.featureValue }}
+          </template>
+          <!-- eslint-disable-next-line -->
+          <template v-slot:item.actions="{ item }">
+            <!-- Botão para Editar a Tag -->
+            <v-icon small @click="editFeature(item)" color="blue">mdi-pencil</v-icon>
+            <!-- Botão para Deletar a Tag -->
+            <v-icon small @click="confirmDelete(item)" color="red">mdi-delete</v-icon>
+          </template>
+        </v-data-table>
+      </v-col>
+    </v-row>
+
+    <!-- Modal para Adicionar/Editar Feature -->
+    <v-dialog v-model="dialog" max-width="500px">
+      <v-card>
+        <v-card-title>
+          <span v-if="editMode">Editar Tag</span>
+          <span v-else>Adicionar Tag</span>
+        </v-card-title>
+
+        <v-card-text>
+          <v-form @submit.prevent="saveFeature">
+            <v-row>
+              <v-col cols="6">
+                <v-text-field
+                  v-model="newFeature.tag"
+                  label="Tag"
+                  required
+                ></v-text-field>
+              </v-col>
+              <v-col cols="6">
+                <v-text-field
+                  v-model="newFeature.featureValue"
+                  label="Value"
+                  required
+                ></v-text-field>
+              </v-col>
+            </v-row>
+          </v-form>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="green darken-1" text @click="saveFeature">Salvar</v-btn>
+          <v-btn color="red darken-1" text @click="dialog = false">Cancelar</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- Modal para Confirmar Delete -->
+    <v-dialog v-model="dialogDelete" max-width="400px">
+      <v-card>
+        <v-card-title class="text-h5">Atenção</v-card-title>
+        <v-card-text>Você tem certeza que deseja deletar esta tag?</v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="green darken-1" text @click="deleteFeature">Sim</v-btn>
+          <v-btn color="red darken-1" text @click="dialogDelete = false">Não</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </v-container>
 </template>
 
 <script>
-
 export default {
-  name: 'ConnectorDetails',
-  props: ['id'],
   data() {
     return {
-      connector: null
+      project: {},
+      features: [],
+      newFeature: {
+        id: null,
+        tag: '',
+        featureValue: ''
+      },
+      selectedFeature: null,
+      dialog: false,
+      dialogDelete: false,
+      editMode: false,
+      headers: [
+        { text: 'Tag', value: 'tag' },
+        { text: 'Value', value: 'featureValue' },
+        { text: 'Ações', value: 'actions', sortable: false }
+      ]
     };
   },
-  watch: {
-    id: 'fetchConnectorDetails'
-  },
-  mounted() {
-    this.fetchConnectorDetails();
+  created() {
+    this.fetchProject();
+    this.fetchFeatures();
   },
   methods: {
-    async fetchConnectorDetails() {
-      try {
-        const response = await this.$api.get(`/connectors/${this.id}`);
-        this.connector = response.data;
-      } catch (error) {
-        console.error('Error fetching connector details:', error);
-      }
+    // Fetch project details
+    fetchProject() {
+      const projectId = this.$route.params.projectId;
+      this.$api.get(`/projects/${projectId}`).then(response => {
+        this.project = response.data;
+      });
     },
-    getParameter(propertyName) {
-      const parameter = this.connector.parameters.find(param => param.name === propertyName);
-      return parameter ? parameter : 'N/A';
+
+    // Fetch features related to the project
+    fetchFeatures() {
+      const projectId = this.$route.params.projectId;
+      this.$api.get(`/projects/${projectId}/features`).then(response => {
+        this.features = response.data;
+      });
+    },
+
+    // Open the modal for adding a new feature
+    openModal() {
+      this.resetForm();
+      this.dialog = true;
+      this.editMode = false;
+    },
+
+    // Reset form fields
+    resetForm() {
+      this.newFeature = {
+        id: null,
+        tag: '',
+        featureValue: ''
+      };
+    },
+
+    // Save feature (add or update)
+    saveFeature() {
+      const projectId = this.$route.params.projectId;
+      this.$api.post(`/projects/${projectId}/features`, this.newFeature).then(() => {
+          this.fetchFeatures();
+          this.dialog = false;
+        });
+      
+    },
+
+    // Edit an existing feature
+    editFeature(feature) {
+      this.newFeature = { ...feature }; // Clona os dados da feature selecionada
+      this.dialog = true;
+      this.editMode = true;
+    },
+
+    // Confirm deletion of a feature
+    confirmDelete(feature) {
+      this.selectedFeature = feature;
+      this.dialogDelete = true;
+    },
+
+    // Delete feature
+    deleteFeature() {
+      this.$api.delete(`/features/${this.selectedFeature.id}`).then(() => {
+        this.fetchFeatures(); // Atualiza a lista de features
+        this.dialogDelete = false;
+      });
     }
   }
 };
 </script>
-
-<style scoped>
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-th, td {
-  padding: 10px;
-  border: 1px solid #ccc;
-  text-align: left;
-}
-th {
-  background-color: #f4f4f4;
-}
-</style>
