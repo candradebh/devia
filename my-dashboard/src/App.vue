@@ -48,7 +48,6 @@ export default {
     items: [
       { title: 'Home', path: '/' },
       { title: 'Projects', path: '/projects' },
-      { title: 'Volumetria', path: '/volumetry' },
       { title: 'Serviços', path: '/services' },
       { title: 'Tabelas', path: '/tables' },
       { title: 'Destinatários', path: '/recipients' },
