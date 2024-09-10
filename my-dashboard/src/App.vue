@@ -47,6 +47,7 @@ export default {
     drawer: false,
     items: [
       { title: 'Home', path: '/' },
+      { title: 'Desenvolvedor', path: '/developer' },
       { title: 'Projects', path: '/projects' },
       { title: 'Serviços', path: '/services' },
       { title: 'Tabelas', path: '/tables' },

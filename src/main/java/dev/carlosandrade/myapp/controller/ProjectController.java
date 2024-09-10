@@ -1,14 +1,11 @@
 package dev.carlosandrade.myapp.controller;
 
-import java.io.File;
-import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.function.Function;
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.InvalidRemoteException;
-import org.eclipse.jgit.api.errors.TransportException;
+import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,23 +17,33 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import dev.carlosandrade.myapp.entity.ProjectEntity;
 import dev.carlosandrade.myapp.repository.ProjectRepository;
-import dev.carlosandrade.myapp.services.ProjectService;
+import dev.carlosandrade.myapp.services.GitHubService;
 
 @RestController
 @RequestMapping("/projects")
 public class ProjectController
 {
+    private static final Logger logger = Logger.getLogger(ProjectController.class.getName());
+
+    @Value("${github.repository}")
+    private String gitHubRepository;
 
     @Autowired
     private ProjectRepository projectRepository;
 
     @Autowired
-    private ProjectService projectService;
+    private GitHubService gitHubService;
 
     @GetMapping
     public List<ProjectEntity> getAllProjects()
     {
         return projectRepository.findAll();
+    }
+
+    @GetMapping("/isActive")
+    public List<ProjectEntity> getActiveProjects()
+    {
+        return projectRepository.findByIsActiveTrue();
     }
 
     @GetMapping("/{id}")
@@ -48,42 +55,19 @@ public class ProjectController
     @PostMapping
     public ProjectEntity createProject(@RequestBody ProjectEntity project)
     {
-        String repoUrl = "https://github.com/candradebh/" + project.getName();
+        project.setDate(new Date());
 
-        // CreateRepoResponse response = projectService.createRepository(request);
-        // GitUtils.createDirectory(project.getWorkspacePath() + project.getName()); //cria apenas uma pasta
         try
         {
-            repoUrl = projectService.createRepository(project.getName(), project.getDescription(), false);
-            project.setGitPath(repoUrl);
+            String repoUrl = gitHubService.createRepository(project, false);
 
-        }
-        catch (IOException e)
-        {
+            gitHubService.createDirAndCloneRepository(project, repoUrl);
 
-            System.out.println("Erro ao criar o repositorio noi git:\n" + e.getMessage());
-            e.printStackTrace();
+            gitHubService.updateReadmeAndPush(project);
         }
-
-        File localRepoDirectory = new File(project.getWorkspacePath() + "/" + project.getName());
-        try
+        catch (Exception e)
         {
-            Git.cloneRepository().setURI(repoUrl).setDirectory(localRepoDirectory).call();
-        }
-        catch (InvalidRemoteException e)
-        {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
-        catch (TransportException e)
-        {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }
-        catch (GitAPIException e)
-        {
-            System.out.println(e.getMessage());
-            e.printStackTrace();
+            logger.info("Falha ao tenta criar e/ou clonar o repositório");
         }
 
         return projectRepository.save(project);
@@ -92,18 +76,30 @@ public class ProjectController
     @PutMapping("/{id}")
     public ResponseEntity<ProjectEntity> updateProject(@PathVariable Long id, @RequestBody ProjectEntity projectDetails)
     {
+
         return projectRepository.findById(id).map(new Function<ProjectEntity, ResponseEntity<ProjectEntity>>()
         {
             @Override
             public ResponseEntity<ProjectEntity> apply(ProjectEntity project)
             {
-                project.setName(projectDetails.getName());// C:/projetos/teste/
+                String repoUrl = gitHubRepository + project.getName();
+
+                // nao permitir a alteracao desse campo
+                if (projectDetails.getGitPath() != null && projectDetails.getGitPath().equals(repoUrl) == false)
+                {
+                    project.setGitPath(repoUrl);
+                }
+
+                // project.setName(projectDetails.getName());// C:/projetos/teste/
                 project.setDescription(projectDetails.getDescription());
                 project.setWorkspacePath(projectDetails.getWorkspacePath());
                 project.setGitPath(projectDetails.getGitPath());
                 project.setIsActive(projectDetails.getIsActive());
                 // project.setFeatures(projectDetails.getFeatures());
                 ProjectEntity updatedProject = projectRepository.save(project);
+
+                gitHubService.updateReadmeAndPush(updatedProject);
+
                 return ResponseEntity.ok(updatedProject);
             }
         }).orElse(ResponseEntity.notFound().build());
@@ -115,4 +111,5 @@ public class ProjectController
         return null;
 
     }
+
 }

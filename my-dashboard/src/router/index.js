@@ -2,12 +2,14 @@ import Vue from 'vue';
 import Router from 'vue-router';
 import HomePage from '@/components/HomePage.vue';
 import ProjectList from '@/components/projects/ProjectList.vue';
+import DeveloperChat from '@/components/developer/DeveloperChat.vue';
 import ScheduledTaskIndex from '@/components/scheduledTasks/ScheduledTaskIndex.vue';
 import ScheduledTaskEdit from '@/components/scheduledTasks/ScheduledTaskEdit.vue';
 import TableMetadataIndex from '@/components/tablemetadata/TableMetadataIndex.vue';
 import TableMetadataEdit from '@/components/tablemetadata/TableMetadataEdit.vue';
 import NotificationRecipientIndex from '@/components/recipients/NotificationRecipientIndex.vue';
 import NotificationLogIndex from '@/components/notifications/NotificationLogIndex.vue';
+
 
 Vue.use(Router);
 
@@ -16,6 +18,11 @@ const routes = [
     path: '/',
     name: 'HomePage',
     component: HomePage
+  },
+  {
+    path: '/developer',
+    name: 'DeveloperChat',
+    component: DeveloperChat
   },
   {
     path: '/projects',
