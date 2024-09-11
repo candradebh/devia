@@ -23,6 +23,9 @@ public class GitHubService
 {
     private static final Logger logger = Logger.getLogger(ProjectController.class.getName());
 
+    @Value("${github.repository}")
+    private String githubRepository;
+
     @Value("${github.api.url}")
     private String githubApiUrl;
 
@@ -48,7 +51,7 @@ public class GitHubService
      */
     public String createRepository(ProjectEntity project, boolean isPrivate) throws IOException
     {
-        String repoUrl = githubApiUrl + "/" + project.getName();
+        String repoUrl = project.getGitPath() != null && !project.getGitPath().isEmpty() ? project.getGitPath() : githubRepository + project.getName();
 
         try
         {
@@ -60,13 +63,14 @@ public class GitHubService
 
             repoUrl = builder.create().getHtmlUrl().toString();
 
-            project.setGitPath(repoUrl);
         }
         catch (Exception e)
         {
             logger.info("Erro ao criar o repositorio no git:\n" + e.getMessage());
             e.printStackTrace();
         }
+
+        project.setGitPath(repoUrl);
 
         return repoUrl;
     }

@@ -1,6 +1,7 @@
 package dev.carlosandrade.myapp.controller;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,7 +98,16 @@ public class ProjectController
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProject(@PathVariable Long id)
     {
-        return null;
+        Optional<ProjectEntity> existing = projectRepository.findById(id);
+        if (existing.isPresent())
+        {
+            projectRepository.deleteById(id);
+            return ResponseEntity.noContent().build();
+        }
+        else
+        {
+            return ResponseEntity.notFound().build();
+        }
 
     }
 

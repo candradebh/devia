@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Supplier;
 import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,15 +52,24 @@ public class LLMModelService
         try
         {
             LLMModelResponse response = restTemplate.getForObject(url, LLMModelResponse.class);
+            // llmModelRepository.deleteAll();
+            llmModelRepository.findAll();
             if (response != null && response.getModels() != null)
             {
-                List<LLMModelEntity> v_listModels = llmModelRepository.findAll();
-                llmModelRepository.saveAll(response.getModels()); // Salva ou atualiza todos os modelos
+                for (LLMModelEntity llmModelEntity : response.getModels())
+                {
+                    Optional<LLMModelEntity> v_llmOpt = llmModelRepository.findByName(llmModelEntity.getName());
+                    if (v_llmOpt.isPresent() == false)
+                    {
+                        llmModelRepository.save(v_llmOpt.get());
+                    }
+                }
             }
         }
         catch (Exception e)
         {
             System.err.println("Erro ao buscar modelos do endpoint: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -76,7 +86,7 @@ public class LLMModelService
         return messageRepository.findByProject(project);
     }
 
-    public String processMessage(Long projectId, String userMessage)
+    public String processMessage(Long projectId, Long modelId, String userMessage)
     {
         // Busca o projeto
         ProjectEntity project = projectRepository.findById(projectId).orElseThrow(new Supplier<RuntimeException>()
@@ -97,7 +107,8 @@ public class LLMModelService
         messageRepository.save(userMessageEntity);
 
         // Faz a requisição para o modelo de LLM
-        String botResponse = this.sendToLlmApi(userMessage);
+        String v_perguntaTratada = project.getDefaultIntro() + "Minha pergunta para voce é: " + userMessage;
+        String botResponse = this.sendToLlmApi(v_perguntaTratada, modelId);
 
         // Salva a resposta da IA
         MessageEntity botMessageEntity = new MessageEntity();
@@ -111,15 +122,20 @@ public class LLMModelService
     }
 
     // Método que envia a requisição HTTP para o LLM
-    private String sendToLlmApi(String userMessage)
+    private String sendToLlmApi(String userMessage, Long modelId)
     {
         // Define a URL da API de LLM;
         String apiUrl = llmEndpoint + "/api/chat"; // Ajuste para a URL correta
 
         // Define o corpo da requisição
         Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("model", "mistral-nemo");
         requestBody.put("stream", false);
+
+        Optional<LLMModelEntity> v_modelOpt = llmModelRepository.findById(modelId);
+        if (v_modelOpt.isPresent())
+        {
+            requestBody.put("model", v_modelOpt.get().getName());
+        }
 
         // Cria a lista de mensagens manualmente
         List<Map<String, String>> messages = new ArrayList<>();

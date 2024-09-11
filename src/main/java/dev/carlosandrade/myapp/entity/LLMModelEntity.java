@@ -1,6 +1,6 @@
 package dev.carlosandrade.myapp.entity;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -31,7 +31,7 @@ public class LLMModelEntity
     private String model;
 
     @Column(nullable = false)
-    private LocalDateTime modifiedAt;
+    private OffsetDateTime modified_at;
 
     @Column(nullable = false)
     private Long size;

@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import dev.carlosandrade.myapp.dto.MessageRequestDTO;
+import dev.carlosandrade.myapp.entity.LLMModelEntity;
 import dev.carlosandrade.myapp.entity.MessageEntity;
+import dev.carlosandrade.myapp.repository.LLMModelRepository;
 import dev.carlosandrade.myapp.services.LLMModelService;
 
 @RestController
@@ -22,15 +24,19 @@ public class LlmController
     private static final Logger logger = Logger.getLogger(LlmController.class.getName());
 
     @Autowired
+    private LLMModelRepository llmModelRepository;
+
+    @Autowired
     private LLMModelService llmService;
 
     @PostMapping("/message")
     public ResponseEntity<String> processMessage(@RequestBody MessageRequestDTO messageRequest)
     {
         Long projectId = messageRequest.getProjectId();
+        Long modelId = messageRequest.getModelId();
         String message = messageRequest.getMessage();
 
-        String response = llmService.processMessage(projectId, message);
+        String response = llmService.processMessage(projectId, modelId, message);
 
         return ResponseEntity.ok(response);
     }
@@ -40,6 +46,13 @@ public class LlmController
     {
         List<MessageEntity> history = llmService.getProjectHistory(projectId);
         return ResponseEntity.ok(history);
+    }
+
+    @GetMapping("/models")
+    public ResponseEntity<List<LLMModelEntity>> getModels()
+    {
+        List<LLMModelEntity> models = llmModelRepository.findAll();
+        return ResponseEntity.ok(models);
     }
 
 }

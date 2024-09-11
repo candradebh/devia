@@ -8,7 +8,13 @@
 
           <v-spacer></v-spacer>
 
-          <template v-if="true">
+          <template>
+
+            <!-- Botão para alternar tema -->
+            <v-btn icon @click="toggleTheme">
+              <v-icon>{{ isDarkTheme ? 'mdi-weather-sunny' : 'mdi-weather-night' }}</v-icon>
+            </v-btn>
+
             <v-btn icon>
               <v-icon>mdi-magnify</v-icon>
             </v-btn>
@@ -33,27 +39,47 @@
       </v-layout>
     </v-app>
   </v-responsive>
-
-
 </template>
 
 <script>
-
-//console.log(process.env.NODE_ENV);
-
 export default {
   name: 'App',
-  data: () => ({
-    drawer: false,
-    items: [
-      { title: 'Home', path: '/' },
-      { title: 'Desenvolvedor', path: '/developer' },
-      { title: 'Projects', path: '/projects' },
-      { title: 'Serviços', path: '/services' },
-      { title: 'Tabelas', path: '/tables' },
-      { title: 'Destinatários', path: '/recipients' },
-      { title: 'Log Notificação', path: '/notificationlogs' },
-    ],
-  }),
+  data() {
+    return {
+      isDarkTheme: false, // Define o tema inicial como claro
+      drawer: false,
+      items: [
+        { title: 'Home', path: '/' },
+        { title: 'Desenvolvedor', path: '/developer' },
+        { title: 'Projects', path: '/projects' },
+        { title: 'Serviços', path: '/services' },
+        { title: 'Tabelas', path: '/tables' },
+        { title: 'Destinatários', path: '/recipients' },
+        { title: 'Log Notificação', path: '/notificationlogs' },
+      ],
+    };
+  },
+  methods: {
+    toggleTheme() {
+      // Alterna entre claro e escuro
+      this.isDarkTheme = !this.isDarkTheme;
+      this.$vuetify.theme.dark = this.isDarkTheme;
+
+      // Salva a preferência de tema no localStorage
+      localStorage.setItem('isDarkTheme', this.isDarkTheme);
+    },
+    loadTheme() {
+      // Carrega a preferência do tema do localStorage
+      const savedTheme = localStorage.getItem('isDarkTheme');
+      if (savedTheme !== null) {
+        this.isDarkTheme = savedTheme === 'true'; // Converte string para booleano
+        this.$vuetify.theme.dark = this.isDarkTheme;
+      }
+    },
+  },
+  created() {
+    // Carrega o tema salvo ao iniciar o componente
+    this.loadTheme();
+  },
 };
 </script>
