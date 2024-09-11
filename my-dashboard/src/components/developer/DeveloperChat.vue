@@ -89,22 +89,28 @@ export default {
     },
     fecthModels(){
       this.$api.get(`/chat/models`).then(response => {
-          this.models = response.data;
+        this.models = response.data;
 
-          // Pré-seleciona o primeiro modelo da lista
-          if (this.models.length > 0) {
-            this.selectedModel = this.models[0].id;
-          }
-        });
+        // Pré-seleciona o primeiro modelo da lista
+        if (this.models.length > 0) {
+          this.selectedModel = this.models[0].id;
+        }
+      });
     },
     fetchChatHistory() {
       if (this.selectedProject) {
         // Carrega o histórico de chat do projeto selecionado
         this.$api.get(`/chat/history/${this.selectedProject}`).then(response => {
-          this.chatHistory = response.data;
+          this.chatHistory = response.data.map(message => {
+            // Verifica se a mensagem contém código e define `isCode`
+            const isCode = message.message.includes("```");
+            return {
+              ...message,
+              isCode: isCode, // Adiciona a propriedade `isCode` ao histórico
+              message: isCode ? message.message.replace(/```/g, "") : message.message,
+            };
+          });
         });
-
-        
       }
     },
     sendMessage() {
