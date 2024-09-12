@@ -52,6 +52,7 @@ export default {
         { title: 'Home', path: '/' },
         { title: 'Desenvolvedor', path: '/developer' },
         { title: 'Projects', path: '/projects' },
+        { title: 'Tasks', path: '/tasks' },
         { title: 'Serviços', path: '/services' },
         { title: 'Tabelas', path: '/tables' },
         { title: 'Destinatários', path: '/recipients' },

@@ -10,6 +10,7 @@ import TableMetadataEdit from '@/components/tablemetadata/TableMetadataEdit.vue'
 import NotificationRecipientIndex from '@/components/recipients/NotificationRecipientIndex.vue';
 import NotificationLogIndex from '@/components/notifications/NotificationLogIndex.vue';
 import ProjectDetails from '@/components/projects/ProjectDetails.vue';
+import TasksIndex from '@/components/tasks/TasksIndex.vue';
 
 
 Vue.use(Router);
@@ -34,6 +35,11 @@ const routes = [
     path: '/projects/:projectId/details',
     name: 'ProjectDetails',
     component: ProjectDetails
+  },
+  {
+    path: '/tasks',
+    name: 'TasksIndex',
+    component: TasksIndex
   },
   {
     path: '/services',
