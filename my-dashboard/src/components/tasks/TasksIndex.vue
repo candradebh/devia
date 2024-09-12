@@ -11,7 +11,7 @@
           </v-card-title>
           <v-card-text>
             <draggable v-model="tasks[status]" :group="'tasks'" :data-id="status" @end="updateTaskStatus">
-              <v-list>
+              <v-list dense>
                 <v-list-item v-for="task in tasks[status]" :key="task.id">
                   <v-list-item-content>
                     <v-list-item-title>{{ task.title }}</v-list-item-title>
@@ -24,6 +24,7 @@
                   <v-btn icon @click="deleteTask(task.id)">
                     <v-icon>mdi-delete</v-icon>
                   </v-btn>
+                  
                 </v-list-item>
               </v-list>
             </draggable>
@@ -174,3 +175,12 @@ export default {
   },
 };
 </script>
+<style>
+
+
+/* Efeito de hover nativo */
+.v-list-item:hover {
+  background-color: #5a5c5c; /* Cor de fundo ao passar o mouse */
+  cursor: pointer;
+}
+</style>
