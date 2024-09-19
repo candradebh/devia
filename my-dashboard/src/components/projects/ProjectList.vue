@@ -69,8 +69,7 @@ export default {
       });
     },
     openForm(model) {
-      this.selectedModel = model;
-      this.dialogForm = true;
+      this.$router.push({ name: 'ProjectForm', params: { itemModel: model } })
     },
     confirmDelete(model) {
       this.selectedModel = model;

@@ -50,8 +50,6 @@ public class ProjectService
 
     public ProjectEntity createRepositoryInGitAndClone(ProjectEntity project)
     {
-        project.setDate(new Date());
-
         try
         {
             String repoUrl = gitHubService.createRepository(project, false);
@@ -98,8 +96,8 @@ public class ProjectService
         }
         else
         {
-            v_feature.setTag(feature.getTag());
-            v_feature.setFeatureValue(feature.getFeatureValue());
+            //v_feature.setTag(feature.getTag());
+            //v_feature.setFeatureValue(feature.getFeatureValue());
             featureRepository.save(v_feature);
         }
 

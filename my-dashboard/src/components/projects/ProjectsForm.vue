@@ -8,7 +8,7 @@
         <v-form ref="form">
           <v-text-field v-model="form.name" label="Name" required></v-text-field>
           <v-text-field v-model="form.description" label="Description" required></v-text-field>
-          <v-text-field v-model="form.workspacePath" label="workspacePath" required></v-text-field>
+          <v-text-field v-model="form.workspacePath" label="workspacePath" placeholder="Ex: C:/projetos/teste/" required></v-text-field>
           <v-text-field v-model="form.gitPath" label="gitPath" required></v-text-field>
           <v-checkbox v-model="form.isActive" label="Active"></v-checkbox>
         </v-form>
@@ -16,7 +16,7 @@
   
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="blue darken-1" text @click="$emit('close')">Cancelar</v-btn>
+        <v-btn color="blue darken-1" text @click="cancel">Cancelar</v-btn>
         <v-btn color="blue darken-1" text @click="saveModel">Salvar</v-btn>
       </v-card-actions>
     </v-card>
@@ -36,7 +36,9 @@
           description: '',
           workspacePath: '',
           gitPath: '',
-          isActive: true
+          isActive: true,
+          features: [],
+          tasks: []
         }
         
       };
@@ -54,6 +56,9 @@
       }
     },
     methods: {
+      cancel(){
+        this.$router.push('/projects');
+      },
       resetForm() {
         this.form = {
           id: null,
@@ -61,7 +66,9 @@
           description: '',
           workspacePath: '',
           gitPath: '',
-          isActive: true
+          isActive: true,
+          features: [],
+          tasks: []
         };
       },
       saveModel() {
@@ -71,8 +78,7 @@
             : this.$api.post('/projects', this.form);
   
           request.then(() => {
-            this.$emit('save');
-            this.$emit('close');
+            this.$router.push('/projects');
           });
         }
       }

@@ -1,13 +1,7 @@
 package dev.carlosandrade.myapp.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,22 +14,22 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class FeatureEntity
+public class FeatureEntity extends EntityBase
 {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String tag;
-
-    @Column(nullable = false)
-    private String featureValue;
+    @Column(name = "local_package_manager")
+    private String localPackageManager;
 
     @ManyToOne
-    @JoinColumn(name = "project_id", nullable = false)
-    @JsonBackReference
+    @JoinColumn(name = "technology_id", foreignKey = @ForeignKey(name = "fk_features_technologies"))
+    private TechnologyEntity technology;
+
+    @ManyToOne
+    @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "fk_features_projects"))
     private ProjectEntity project;
 
 }

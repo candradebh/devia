@@ -2,6 +2,8 @@ package dev.carlosandrade.myapp.controller;
 
 import java.util.List;
 import java.util.logging.Logger;
+
+import dev.carlosandrade.myapp.entity.ProjectEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -53,6 +55,18 @@ public class LlmController
     {
         List<LLMModelEntity> models = llmModelRepository.findAll();
         return ResponseEntity.ok(models);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<LLMModelEntity> getProjectById(@PathVariable Long id)
+    {
+        return llmModelRepository.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping
+    public ProjectEntity createProject(@RequestBody ProjectEntity project)
+    {
+        return projectService.createRepositoryInGitAndClone(project);
     }
 
 }

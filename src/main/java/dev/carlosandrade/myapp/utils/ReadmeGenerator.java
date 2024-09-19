@@ -31,7 +31,7 @@ public class ReadmeGenerator
             "### Caminho Completo do Projeto\n\n" + //
             "```bash\n" + "%s\n" + "```\n\n" + //
             "Este caminho é composto pelo diretório de desenvolvimento local seguido do nome do projeto.\n\n", project.getName(),
-            project.getDate() != null ? project.getDate().toString() : "N/A", project.getIsActive() ? "Ativo" : "Inativo", project.getPathProject(),
+            //project.getDate() != null ? project.getDate().toString() : "N/A", project.getIsActive() ? "Ativo" : "Inativo", project.getPathProject(),
             project.getDescription(), project.getId(), project.getName(), project.getWorkspacePath(), project.getGitPath(), project.getWorkspacePath(),
             project.getGitPath(), project.getPathProject());
 
@@ -42,8 +42,8 @@ public class ReadmeGenerator
         // Processa as features do projeto
         for (FeatureEntity feature : project.getFeatures())
         {
-            String tag = feature.getTag();
-            String value = feature.getFeatureValue();
+            String tag = "";//feature.getTag();
+            String value = "";//feature.getFeatureValue();
 
             if (tag.startsWith("LANGUAGE"))
             {

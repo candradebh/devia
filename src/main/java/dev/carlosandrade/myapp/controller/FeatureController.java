@@ -65,8 +65,8 @@ public class FeatureController
             @Override
             public ResponseEntity<FeatureEntity> apply(FeatureEntity feature)
             {
-                feature.setFeatureValue(featureDetails.getFeatureValue());
-                feature.setTag(featureDetails.getTag());
+                //feature.setFeatureValue(featureDetails.getFeatureValue());
+                //feature.setTag(featureDetails.getTag());
                 FeatureEntity updatedFeature = featureRepository.save(feature);
                 return ResponseEntity.ok(updatedFeature);
             }

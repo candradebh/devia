@@ -52,16 +52,20 @@ public class LLMModelService
         try
         {
             LLMModelResponse response = restTemplate.getForObject(url, LLMModelResponse.class);
-            // llmModelRepository.deleteAll();
-            llmModelRepository.findAll();
+            List<LLMModelEntity> v_listaModels = llmModelRepository.findAll();
+
             if (response != null && response.getModels() != null)
             {
                 for (LLMModelEntity llmModelEntity : response.getModels())
                 {
-                    Optional<LLMModelEntity> v_llmOpt = llmModelRepository.findByName(llmModelEntity.getName());
-                    if (v_llmOpt.isPresent() == false)
-                    {
-                        llmModelRepository.save(v_llmOpt.get());
+                    try {
+                        Optional<LLMModelEntity> v_llmOpt = llmModelRepository.findByName(llmModelEntity.getName());
+                        if(!v_llmOpt.isPresent()){
+                            llmModelRepository.save(llmModelEntity);
+                        }
+
+                    } catch (Exception e) {
+                        //throw new RuntimeException(e);
                     }
                 }
             }
@@ -69,7 +73,7 @@ public class LLMModelService
         catch (Exception e)
         {
             System.err.println("Erro ao buscar modelos do endpoint: " + e.getMessage());
-            e.printStackTrace();
+
         }
     }
 

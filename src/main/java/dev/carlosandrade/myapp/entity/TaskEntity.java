@@ -17,13 +17,14 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Getter
 @Setter
-public class TaskEntity {
+public class TaskEntity extends EntityBase{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String title;
+
     private String description;
 
     @Column(nullable = false, columnDefinition = "boolean default false")
@@ -33,8 +34,9 @@ public class TaskEntity {
     @Enumerated(EnumType.STRING)
     private TaskStatus status;
 
+
     @ManyToOne
-    @JoinColumn(name = "project_id")
+    @JoinColumn(name = "project_id", nullable = false, foreignKey = @ForeignKey(name = "fk_tasks_projects"))
     @JsonBackReference
     private ProjectEntity project;
 

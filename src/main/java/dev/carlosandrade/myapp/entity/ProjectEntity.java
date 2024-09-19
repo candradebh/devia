@@ -30,14 +30,12 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class ProjectEntity
+public class ProjectEntity extends EntityBase
 {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private Date date;
 
     @Column(unique = true)
     private String name;
@@ -83,8 +81,8 @@ public class ProjectEntity
 
         for (FeatureEntity feature : this.getFeatures())
         {
-            String tag = feature.getTag();
-            String value = feature.getFeatureValue();
+            String tag = "";//feature.getTag();
+            String value = "";//feature.getFeatureValue();
 
             if (tag.startsWith("LANGUAGE"))
             {
