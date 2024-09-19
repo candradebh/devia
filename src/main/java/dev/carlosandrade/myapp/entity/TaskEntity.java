@@ -30,7 +30,6 @@ public class TaskEntity extends EntityBase{
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean deleted = false;
 
-
     @Enumerated(EnumType.STRING)
     private TaskStatus status;
 

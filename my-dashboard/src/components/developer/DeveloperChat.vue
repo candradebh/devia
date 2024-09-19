@@ -3,50 +3,35 @@
     <!-- Caixa de Seleção para Projetos e Modelos (em linha) -->
     <v-row>
       <v-col cols="12" md="6">
-        <v-select
-          v-model="selectedProject"
-          :items="projects"
-          item-text="name"
-          item-value="id"
-          label="Selecione o Projeto"
-          outlined
-          dense
-          @change="fetchChatHistory"
-        ></v-select>
+        <v-select v-model="selectedProject" :items="projects" item-text="name" item-value="id"
+          label="Selecione o Projeto" outlined dense clearable @change="fetchChatHistory"></v-select>
       </v-col>
 
       <v-col cols="12" md="6">
-        <v-select
-          v-model="selectedModel"
-          :items="models"
-          item-text="name"
-          item-value="id"
-          label="Selecione o Modelo"
-          outlined
-          dense
-        ></v-select>
+        <v-select v-model="selectedModel" :items="models" item-text="name" item-value="id" label="Selecione o Modelo"
+          outlined dense></v-select>
       </v-col>
     </v-row>
 
     <!-- Histórico das conversas -->
-    <v-row v-if="selectedProject">
+    <v-row>
       <v-col>
         <v-list dense>
           <v-list-item v-for="(message, index) in chatHistory" :key="index">
             <v-list-item-content>
-              <v-list-item-title v-if="message.sender === 'user'">
-                <strong>Você:</strong> {{ message.message }}
-              </v-list-item-title>
-              <v-list-item-title v-else>
-                <strong>Bot:</strong>
-                <!-- Verifica se a mensagem contém um código formatado -->
+              <v-list-item-title :class="message.sender === 'user' ? 'user-message' : 'bot-message'">
+                
+                <strong :style="message.sender === 'user' ? 'color:green' : 'color:red'">
+                  {{ message.sender === 'user' ? 'Você:' : 'Bot:' }}
+                </strong>
+                
                 <template v-if="message.isCode">
                   <v-card class="pa-3 mb-2">
                     <pre><code>{{ message.message }}</code></pre>
                   </v-card>
                 </template>
                 <template v-else>
-                  {{ message.message }}
+                  <span class="message-text">{{ message.message }}</span>
                 </template>
               </v-list-item-title>
             </v-list-item-content>
@@ -56,7 +41,7 @@
     </v-row>
 
     <!-- Input de mensagem e botão enviar -->
-    <v-row v-if="selectedProject && selectedModel" class="mt-5">
+    <v-row v-if="selectedModel" class="mt-5">
       <v-col>
         <v-textarea v-model="userMessage" label="Digite sua mensagem" outlined rows="2"></v-textarea>
       </v-col>
@@ -87,31 +72,39 @@ export default {
         this.projects = response.data;
       });
     },
-    fecthModels(){
+    fecthModels() {
       this.$api.get(`/chat/models`).then(response => {
         this.models = response.data;
 
         // Pré-seleciona o primeiro modelo da lista
-        if (this.models.length > 0) {
+        if (this.models.length > 0 && this.selectedModel == null) {
           this.selectedModel = this.models[0].id;
         }
       });
     },
     fetchChatHistory() {
-      if (this.selectedProject) {
-        // Carrega o histórico de chat do projeto selecionado
-        this.$api.get(`/chat/history/${this.selectedProject}`).then(response => {
-          this.chatHistory = response.data.map(message => {
-            // Verifica se a mensagem contém código e define `isCode`
-            const isCode = message.message.includes("```");
-            return {
-              ...message,
-              isCode: isCode, // Adiciona a propriedade `isCode` ao histórico
-              message: isCode ? message.message.replace(/```/g, "") : message.message,
-            };
-          });
+
+      const messageData = {
+        projectId: this.selectedProject,
+        modelId: this.selectedModel, // Envia o modelo selecionado junto
+        message: this.userMessage,
+      };
+
+
+
+      // Carrega o histórico de chat do projeto selecionado
+      this.$api.post(`/chat/history`, messageData).then(response => {
+        this.chatHistory = response.data.map(message => {
+          // Verifica se a mensagem contém código e define `isCode`
+          const isCode = message.message.includes("```");
+          return {
+            ...message,
+            isCode: isCode, // Adiciona a propriedade `isCode` ao histórico
+            message: isCode ? message.message.replace(/```/g, "") : message.message,
+          };
         });
-      }
+      });
+
     },
     sendMessage() {
       if (this.userMessage.trim() !== "") {
@@ -122,7 +115,7 @@ export default {
         };
 
         // Envia a mensagem ao backend
-        this.$api.post(`/chat/message?projectId=${this.selectedProject}`, messageData).then(response => {
+        this.$api.post(`/chat/message`, messageData).then(response => {
           // Adiciona a mensagem do usuário no histórico
           this.chatHistory.push({
             sender: "user",
@@ -148,6 +141,7 @@ export default {
   created() {
     this.fetchProjects();
     this.fecthModels();
+    this.fetchChatHistory();
   },
 };
 </script>
@@ -155,9 +149,18 @@ export default {
 <style scoped>
 .v-list {
   height: 300px;
+  /* altura desejada */
   overflow-y: auto;
+  /* permite rolagem vertical */
   border: 1px solid #ddd;
   padding: 10px;
   border-radius: 8px;
+}
+
+.message-text {
+  white-space: pre-wrap;
+  /* permite quebra de linha */
+  word-wrap: break-word;
+  /* quebra palavras longas */
 }
 </style>

@@ -30,6 +30,7 @@ public class FeatureEntity extends EntityBase
 
     @ManyToOne
     @JoinColumn(name = "project_id", foreignKey = @ForeignKey(name = "fk_features_projects"))
+    @JsonBackReference
     private ProjectEntity project;
 
 }

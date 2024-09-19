@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 import javax.annotation.PostConstruct;
+
+import dev.carlosandrade.myapp.dto.MessageRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -82,41 +84,57 @@ public class LLMModelService
         return llmModelRepository.save(entity);
     }
 
-    public List<MessageEntity> getProjectHistory(Long projectId)
+    public List<MessageEntity> getHistoryChat(MessageRequestDTO messageRequest)
     {
-        ProjectEntity project = projectRepository.findById(projectId).orElseThrow(new Supplier<RuntimeException>()
-        {
-            @Override
-            public RuntimeException get()
+
+        if(messageRequest.getProjectId()!=null){
+
+            ProjectEntity project = projectRepository.findById(messageRequest.getProjectId()).orElseThrow(new Supplier<RuntimeException>()
             {
-                return new RuntimeException("Projeto não encontrado");
-            }
-        });
-        return messageRepository.findByProject(project);
+                @Override
+                public RuntimeException get()
+                {
+                    return new RuntimeException("Projeto não encontrado");
+                }
+            });
+
+            return messageRepository.findByProject(project);
+        }
+
+        return messageRepository.findByProjectIsNull();
     }
 
-    public String processMessage(Long projectId, Long modelId, String userMessage)
+    public String processMessage(MessageRequestDTO messageRequest)
     {
+        Long projectId = messageRequest.getProjectId();
+        Long modelId = messageRequest.getModelId();
+        String message = messageRequest.getMessage();
+
+        ProjectEntity project = null;
+
         // Busca o projeto
-        ProjectEntity project = projectRepository.findById(projectId).orElseThrow(new Supplier<RuntimeException>()
-        {
-            @Override
-            public RuntimeException get()
-            {
-                return new RuntimeException("Projeto não encontrado");
-            }
-        });
+        if(projectId!=null){
+             project = projectRepository.findById(projectId).orElse(null);
+        }
+
 
         // Salva a mensagem do usuário no banco
         MessageEntity userMessageEntity = new MessageEntity();
         userMessageEntity.setProject(project);
-        userMessageEntity.setMessage(userMessage);
+        userMessageEntity.setMessage(message);
         userMessageEntity.setSender("user");
         userMessageEntity.setTimestamp(LocalDateTime.now());
         messageRepository.save(userMessageEntity);
 
+        //tratando a pergunta se possuir um projeto associado
+        String v_perguntaTratada="";
+        if(project!=null){
+            v_perguntaTratada = project.getDefaultIntro() + "Minha pergunta para voce é: " + userMessageEntity.getMessage();
+        }else {
+            v_perguntaTratada = userMessageEntity.getMessage();
+        }
+
         // Faz a requisição para o modelo de LLM
-        String v_perguntaTratada = project.getDefaultIntro() + "Minha pergunta para voce é: " + userMessage;
         String botResponse = this.sendToLlmApi(v_perguntaTratada, modelId);
 
         // Salva a resposta da IA

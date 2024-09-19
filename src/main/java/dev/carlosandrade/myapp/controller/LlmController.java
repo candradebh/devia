@@ -34,19 +34,14 @@ public class LlmController
     @PostMapping("/message")
     public ResponseEntity<String> processMessage(@RequestBody MessageRequestDTO messageRequest)
     {
-        Long projectId = messageRequest.getProjectId();
-        Long modelId = messageRequest.getModelId();
-        String message = messageRequest.getMessage();
-
-        String response = llmService.processMessage(projectId, modelId, message);
-
+        String response = llmService.processMessage(messageRequest);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/history/{projectId}")
-    public ResponseEntity<List<MessageEntity>> getProjectHistory(@PathVariable Long projectId)
+    @PostMapping("/history")
+    public ResponseEntity<List<MessageEntity>> getProjectHistory(@RequestBody MessageRequestDTO messageRequest)
     {
-        List<MessageEntity> history = llmService.getProjectHistory(projectId);
+        List<MessageEntity> history = llmService.getHistoryChat(messageRequest);
         return ResponseEntity.ok(history);
     }
 
