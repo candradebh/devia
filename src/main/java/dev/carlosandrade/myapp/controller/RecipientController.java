@@ -32,15 +32,7 @@ public class RecipientController
     @GetMapping("/{id}")
     public ResponseEntity<RecipientEntity> getRecipientById(@PathVariable Long id)
     {
-        Optional<RecipientEntity> entityOptional = recipientRepository.findById(id);
-        if (entityOptional.isPresent())
-        {
-            return ResponseEntity.ok(entityOptional.get());
-        }
-        else
-        {
-            return ResponseEntity.notFound().build();
-        }
+        return recipientRepository.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping

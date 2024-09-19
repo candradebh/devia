@@ -77,6 +77,11 @@ public class LLMModelService
         }
     }
 
+    public LLMModelEntity create(LLMModelEntity entity)
+    {
+        return llmModelRepository.save(entity);
+    }
+
     public List<MessageEntity> getProjectHistory(Long projectId)
     {
         ProjectEntity project = projectRepository.findById(projectId).orElseThrow(new Supplier<RuntimeException>()

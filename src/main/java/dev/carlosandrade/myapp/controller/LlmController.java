@@ -58,15 +58,15 @@ public class LlmController
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<LLMModelEntity> getProjectById(@PathVariable Long id)
+    public ResponseEntity<LLMModelEntity> getModelById(@PathVariable Long id)
     {
         return llmModelRepository.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ProjectEntity createProject(@RequestBody ProjectEntity project)
+    public ResponseEntity<LLMModelEntity> create(@RequestBody LLMModelEntity entity)
     {
-        return projectService.createRepositoryInGitAndClone(project);
+        return ResponseEntity.ok(llmModelRepository.save(entity));
     }
 
 }
